@@ -46,7 +46,7 @@ def delete_dds_files(suffix):
         print(f"No {suffix}.dds files found.")
         return
     for i, f in enumerate(files):
-        time.sleep(0.01)
+        time.sleep(0.005)
         f.unlink()
         progress_bar(i, len(files))
     print(f"Deleted {len(files)} {suffix}.dds files")
@@ -93,7 +93,7 @@ def main():
                 print("No unused livery directories found.")
             else:
                 for i, d in enumerate(dirs_to_delete):
-                    time.sleep(0.01)
+                    time.sleep(0.005)
                     shutil.rmtree(d)
                     progress_bar(i, len(dirs_to_delete))
                 print(f"Deleted {len(dirs_to_delete)} unused livery director{'y' if len(dirs_to_delete) == 1 else 'ies'}")
