@@ -4,6 +4,9 @@ import shutil
 import time
 from pathlib import Path
 
+CUSTOMS_PATH = Path.home() / "Documents" / "Assetto Corsa Competizione" / "Customs"
+
+
 def progress_bar(current, total, bar_length=20):
     current += 1
     fraction = current / total
@@ -15,8 +18,9 @@ def progress_bar(current, total, bar_length=20):
 
 
 def get_custom_skin_names():
-    cars_path = Path(__file__).parent.parent / "Customs" / "cars"
+    cars_path = CUSTOMS_PATH / "cars"
     skin_names = []
+    skipped = []
     for json_file in cars_path.glob("*.json"):
         raw = json_file.read_bytes()
         if raw[:2] == b'\xff\xfe':
@@ -25,14 +29,18 @@ def get_custom_skin_names():
             encoding = "utf-16-le"
         else:
             encoding = "utf-8"
-        data = json.loads(raw.decode(encoding))
-        if "customSkinName" in data:
+        try:
+            data = json.loads(raw.decode(encoding))
+        except (UnicodeDecodeError, json.JSONDecodeError) as e:
+            skipped.append((json_file.name, str(e)))
+            continue
+        if data.get("customSkinName"):
             skin_names.append(data["customSkinName"])
-    return skin_names
+    return skin_names, skipped
 
 
 def delete_dds_files(suffix):
-    liveries_path = Path(__file__).parent.parent / "Customs" / "liveries"
+    liveries_path = CUSTOMS_PATH / "liveries"
     files = list(liveries_path.rglob(f"*{suffix}.dds"))
     if not files:
         print(f"No {suffix}.dds files found.")
@@ -72,8 +80,14 @@ def main():
             delete_dds_files("_1")      
         case _:
             print("\nRemoving all livery files you don't have a car file for. You will only see the liveries you can select in the menu")
-            skin_names = set(get_custom_skin_names())
-            liveries_path = Path(__file__).parent.parent / "Customs" / "liveries"
+            skin_names, skipped = get_custom_skin_names()
+            skin_names = set(skin_names)
+            print(f"Parsed {len(skin_names)} unique skin names")
+            if skipped:
+                print(f"\nFailed to parse {len(skipped)} file(s):")
+                for name, err in skipped:
+                    print(f"  {name}: {err}")
+            liveries_path = CUSTOMS_PATH / "liveries"
             dirs_to_delete = [d for d in liveries_path.iterdir() if d.is_dir() and d.name not in skin_names]
             if not dirs_to_delete:
                 print("No unused livery directories found.")
