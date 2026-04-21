@@ -36,7 +36,7 @@ function Get-CustomSkinNames {
                     $data = $text | ConvertFrom-Json -ErrorAction Stop
 
                 } catch {
-                    $text = Get-Content -$file -raw -Encoding UTF8 -ErrorAction Stop
+                    $text = Get-Content -Path $file -Raw -Encoding UTF8 -ErrorAction Stop
                     $data = $text | ConvertFrom-Json -ErrorAction Stop
                 }
                 if ($data.customSkinName) {
@@ -48,13 +48,9 @@ function Get-CustomSkinNames {
                     Error = $_.Exception.Message
                 }
             }
-        } if (($skinNames).count -gt 0) {
-            return $skinNames
-            if (($skipped).count -gt 0) {
-                return $skipped
-            }
         }
     }
+    return [PSCustomObject]@{ SkinNames = $skinNames; Skipped = $skipped }
 }
 function Remove-DDSFiles {
     param (
@@ -85,13 +81,14 @@ function Remove-DDSFiles {
         $fileCountWhatIf = $ddsFiles.Count
         $whatifCount = 0
         do {
-            for (($i=0), ($ddsFiles[$i]);$i -le $fileCountWhatIf; ($i++), ($ddsFiles[$i++])) {
+            for ($i = 0; $i -lt $fileCountWhatIf; $i++) {
                 $percentage = ($i / $fileCountWhatIf) * 100
                 $ddsFolderName = ($ddsFiles[$i] -split '\\')[$liveryFolderCount]
                 $ddsFolderFile = ($ddsFiles[$i] -split '\\')[$liveryFolderCount + 1]
                 $ddsRemovalDetails = $ddsFolderName, $ddsFolderFile -join ' contents '
                 Write-Log -Message " Would remove folder $ddsRemovalDetails"
-                Write-Progress -Activity "Deleting $i / $fileCountWhatIf files" -CurrentOperation "Removing $ddsFolderName file $ddsFolderFile" -Status "$percentage% Complete" -PercentComplete $percentage
+                Write-Progress -Activity "Deleting $($i+1) / $fileCountWhatIf files" -CurrentOperation "Removing $ddsFolderName file $ddsFolderFile" -Status "$percentage% Complete" -PercentComplete $percentage
+                Start-Sleep -Milliseconds 0.5
                 $whatifCount++
             }
         } until ($whatifCount -le $fileCountWhatIf)
@@ -99,13 +96,14 @@ function Remove-DDSFiles {
         $fileCount = $ddsFiles.Count
         $ddsFileCount = 0
         do {
-            for (($i=0), ($ddsFiles[$i]);$i -le $fileCount; ($i++), ($ddsFiles[$i++])) {
+            for ($i = 0; $i -lt $fileCount; $i++) {
                 $percentage = ($i / $fileCount) * 100
                 $ddsFolderName = ($ddsFiles[$i] -split '\\')[$liveryFolderCount]
                 $ddsFolderFile = ($ddsFiles[$i] -split '\\')[$liveryFolderCount + 1]
                 $ddsRemovalDetails = $ddsFolderName + " contents " + $ddsFolderFile
+                Start-Sleep -Milliseconds 0.5
                 Remove-Item -Path $ddsFiles[$i]
-                Write-Progress -Activity "Deleting $i / $fileCount files" -CurrentOperation "Removing $ddsFolderName file $ddsFolderFile" -Status "$percentage% Complete" -PercentComplete $percentage
+                Write-Progress -Activity "Deleting $($i+1) / $fileCount files" -CurrentOperation "Removing $ddsFolderName file $ddsFolderFile" -Status "$percentage% Complete" -PercentComplete $percentage
             }
         } until ($ddsFileCount -le $fileCount)
     } else {
@@ -131,5 +129,58 @@ function Show-Menu {
         2{write-output "Removing all _0.dds files from your liveries directory. You can regenerate them by loading the livery in the menu"}
         3{write-output "Removing all _1.dds files from your liveries directory. You can regenerate them by loading the livery on track"}
         4{write-output "Removing all dds files from your liveries directory. You can regenerate them by loading the livery in the menu and on track"}
+    }
+    return $Choice
+}
+
+# Main
+$choice = Show-Menu
+switch ($choice) {
+    0 {
+        $result = Get-CustomSkinNames -path $customsPath
+        if ($result -eq $false) { Write-Output "Cars folder not found." }
+        else {
+            Write-Output "Found $($result.SkinNames.Count) skin names, $($result.Skipped.Count) file(s) skipped"
+            $liveryPath = $customsPath + 'liveries'
+            $toDelete = Get-ChildItem -Path $liveryPath -Directory | Where-Object { $_.Name -notin $result.SkinNames }
+            if ($toDelete.Count -eq 0) {
+                Write-Output "No unused livery directories found."
+            } else {
+                Write-Output "Would delete $($toDelete.Count) unused livery directories:"
+                $toDelete | ForEach-Object {
+                    Write-Output "  $($_.Name)"
+                    Write-Log -Message "Would remove livery: $($_.Name)"
+                }
+            }
+        }
+    }
+    1 {
+        $result = Get-CustomSkinNames -path $customsPath
+        if ($result -eq $false) { Write-Output "Cars folder not found." }
+        else {
+            Write-Output "Found $($result.SkinNames.Count) skin names, $($result.Skipped.Count) file(s) skipped"
+            $liveryPath = $customsPath + 'liveries'
+            $toDelete = Get-ChildItem -Path $liveryPath -Directory | Where-Object { $_.Name -notin $result.SkinNames }
+            if ($toDelete.Count -eq 0) {
+                Write-Output "No unused livery directories found."
+            } else {
+                $total = $toDelete.Count
+                for ($i = 0; $i -lt $total; $i++) {
+                    $percentage = [int](($i + 1) / $total * 100)
+                    Write-Progress -Activity "Deleting $($i+1) / $total directories" -Status "$percentage% Complete" -PercentComplete $percentage
+                    Start-Sleep -Milliseconds 0.5
+                    Remove-Item -Path $toDelete[$i].FullName -Recurse -Force
+                }
+                Write-Progress -Completed -Activity "Done"
+                Write-Output "Deleted $total unused livery directories."
+                Write-Log -Message "Deleted $total livery directories"
+            }
+        }
+    }
+    2 { Remove-DDSFiles -files "_0" -path $customsPath -Whatif $false }
+    3 { Remove-DDSFiles -files "_1" -path $customsPath -Whatif $false }
+    4 {
+        Remove-DDSFiles -files "_0" -path $customsPath -Whatif $false
+        Remove-DDSFiles -files "_1" -path $customsPath -Whatif $false
     }
 }
