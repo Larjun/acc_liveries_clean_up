@@ -1,7 +1,34 @@
 # ACC Livery Folder Clean Up Script
-Removes ACC livery files for which a cars file does not exist. This is a Python script — no app needs to be installed beyond Python itself.
+Removes ACC livery files for which a cars file does not exist. Available as a Python script (`cleaner.py`) or a PowerShell script (`cleaner.ps1`) — use whichever you prefer.
 
-## Running on Windows
+## Running the PowerShell script (cleaner.ps1)
+
+PowerShell comes built into Windows — no extra installs needed.
+
+### 1. Download the script
+1. On this page, click the green **Code** button near the top right
+2. Select **Download ZIP**
+3. Once downloaded, right-click the ZIP file and select **Extract All**
+4. Choose a location you can easily find (e.g. your Desktop) and click **Extract**
+
+### 2. Run the script
+Right-click `cleaner.ps1` and select **Run with PowerShell**. A menu will appear — enter the number for the option you want and press Enter.
+
+### Troubleshooting: "script cannot be loaded because running scripts is disabled"
+Windows blocks PowerShell scripts by default. To fix this:
+1. Press `Win + S`, search for **PowerShell**, right-click it and select **Run as administrator**
+2. Paste this command and press Enter:
+   ```
+   Set-ExecutionPolicy RemoteSigned
+   ```
+3. Type `Y` and press Enter to confirm
+4. Try running `cleaner.ps1` again
+
+---
+
+## Running the Python script (cleaner.py)
+
+This is identical to the PowerShell script, if you prefer to run the python script for any reason or have python installed on your computer.
 
 ### 1. Download the script
 1. On this page, click the green **Code** button near the top right
