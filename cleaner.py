@@ -39,7 +39,7 @@ def get_custom_skin_names():
     return skin_names, skipped
 
 
-def delete_dds_files(suffix):
+def delete_dds_files(suffix): 
     liveries_path = CUSTOMS_PATH / "liveries"
     files = list(liveries_path.rglob(f"*{suffix}.dds"))
     if not files:
