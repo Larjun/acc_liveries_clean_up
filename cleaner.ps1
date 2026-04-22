@@ -1,3 +1,55 @@
+<#
+.SYNOPSIS
+    Performs cleanup of ACC Livery files which do not belong to cars you have.
+.DESCRIPTION
+    Function: Write-Log stores log file in "$env:USERPROFILE\Documents\Assetto Corsa Competizione\Customs\" to review if $true is passed to -Whatif
+    Function: Get-CustomSkinNames searched for car json files and attempts to determine customSkinName to assist with sorting
+    Function: Remove-DDSFiles takes parameters to remove *_1.dds and *_0.dds files and includes a -Whatif ability if OPTION 0 is used
+    Function: Show-Menu wraps it all up and allows the tool to be ran by right clicking on file and selecting Run with Powershell
+.PARAMETER customPath
+    Default: "$env:USERPROFILE\Documents\Assetto Corsa Competizione\Customs\"
+.PARAMETER choice
+    Takes 0 through 4 for inputs
+    Provide '!?' without the quotes to obtain help with options
+.INPUTS
+    OPTION 0
+    Allows code to be ran and log what WOULD be deleted but does NOT remove ANYTHING
+    Writes out to the log file "$env:USERPROFILE\Documents\Assetto Corsa Competizione\Customs\ACC_LIVERIES_CLEAN_UP.LOG"
+
+    OPTION 1
+    Remove all liveries without Cars file 
+
+    OPTION 2
+    Remove all *_0.dds files
+
+    OPTION 3
+    Remove all *_1.dds files
+
+    OPTION 4
+    Removes all DDS files
+
+    
+.LINK
+    https://github.com/Larjun/acc_liveries_clean_up
+.INPUTS
+    Running by right clicking and selecting Run with Powershell:
+    cmdlet cleaner.ps1 at command pipeline position 1
+    Supply values for the following parameters:
+    (Type !? for Help.)
+    choice: 0
+.OUTPUTS
+    cmdlet cleaner.ps1 at command pipeline position 1
+
+    Deleting 607 / 4253 files
+    14.2487655772396% Complete
+    [ooooooooooooooo                                                                                             ]
+
+    Would be removing 904_GT3_Lamborghini_PumpnPak file decals_1.dds
+.NOTES
+    Author: Carey Arnaud
+    Date: 4/21/2026
+    Note: Thanks for letting me assist with the project Arjun :)
+#>
 param (
     [CmdletBinding()]
     [Parameter(Mandatory=$false)]
@@ -8,9 +60,7 @@ param (
         Option 3: Remove _1.dds files 
         Option 4: Remove all DDS files")]
     [ValidateSet("0","1","2","3","4")]
-    [int]$choice,
-    [Parameter(Mandatory=$true)]
-    [bool]$Whatif
+    [int]$choice
 )
 
 function Write-Log {
@@ -124,11 +174,14 @@ function Remove-DDSFiles {
 }
 function Show-Menu {
     param (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory=$true,HelpMessage="
+        Option 0: See what would be removed'default'
+        Option 1: Remove all liveries without Cars file 
+        Option 2: Remove _0.dds files 
+        Option 3: Remove _1.dds files 
+        Option 4: Remove all DDS files")]
         [ValidateSet("0","1","2","3","4")]
-        [int]$choice,
-        [Parameter(Mandatory=$true)]
-        [bool]$Whatif
+        [int]$choice
     )
     switch ($choice) {
         0{Write-Output "Perform Test run of Option 1:Log File will be generated for review here: "
@@ -184,7 +237,7 @@ function Show-Menu {
             Remove-DDSFiles -files "_1" -path $customsPath -Whatif $false
         }
     }
-    return $Choice
+    return $choice
 }
 
-Show-Menu -choice $choice -Whatif $Whatif
+Show-Menu -choice $choice
