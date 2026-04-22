@@ -14,6 +14,32 @@ PowerShell comes built into Windows — no extra installs needed.
 ### 2. Run the script
 Right-click `cleaner.ps1` and select **Run with PowerShell**. A menu will appear — enter the number for the option you want and press Enter.
 
+### 3. Options
+| Option Number | Description |
+| :--- | :--- |
+| **0** | Allows code to be ran and log what WOULD be deleted but does NOT remove ANYTHING; Writes out to the log file "$env:USERPROFILE\Documents\Assetto Corsa Competizione\Customs\ACC_LIVERIES_CLEAN_UP.LOG" |
+| **1** | Remove all liveries without Cars file  |
+| **2** | Remove all *_0.dds files |
+| **3** | Remove all *_1.dds files |
+| **4** | Removes all DDS files |
+
+### 4. Example Output and LogFile
+
+#### Option Menu
+
+![Option_Menu](images\Powershell_Option.png)
+
+#### Option Help
+
+![Option_Help](images/Powershell_Option_Help.png)
+
+#### Menu Output
+
+![Menu_Output](images\Powershell_Option_0_Output_Example.png)
+
+#### LogFile
+![LogFile](images\Powershell_Option_0_Log_File_Example.png)
+
 ### Troubleshooting: "script cannot be loaded because running scripts is disabled"
 Windows blocks PowerShell scripts by default. To fix this:
 1. Press `Win + S`, search for **PowerShell**, right-click it and select **Run as administrator**
@@ -23,6 +49,14 @@ Windows blocks PowerShell scripts by default. To fix this:
    ```
 3. Type `Y` and press Enter to confirm
 4. Try running `cleaner.ps1` again
+5. Built in Help
+```powershell
+   # for Basic help
+   Get-Help ./cleaner.ps1
+
+   #for Full help
+   Get-Help ./cleaner.ps1 -Full
+```
 
 ---
 
