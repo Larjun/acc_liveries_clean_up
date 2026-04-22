@@ -11,8 +11,21 @@ PowerShell comes built into Windows — no extra installs needed.
 3. Once downloaded, right-click the ZIP file and select **Extract All**
 4. Choose a location you can easily find (e.g. your Desktop) and click **Extract**
 
+1. On this page, click the below link to download and run the script automatically
+[![Download ACC CLEANER Powershell Version](https://gist.githubusercontent.com/cxmeel/0dbc95191f239b631c3874f4ccf114e2/raw/download.svg)](https://github.com/Larjun/acc_liveries_clean_up/blob/powershellVersion/cleaner.ps1)
+
+
 ### 2. Run the script
 Right-click `cleaner.ps1` and select **Run with PowerShell**. A menu will appear — enter the number for the option you want and press Enter.
+
+### 3. Options
+| Option Number | Description |
+| :--- | :--- |
+| **0** | Allows code to be ran and log what WOULD be deleted but does NOT remove ANYTHING; Writes out to the log file "$env:USERPROFILE\Documents\Assetto Corsa Competizione\Customs\ACC_LIVERIES_CLEAN_UP.LOG" |
+| **1** | Remove all liveries without Cars file  |
+| **2** | Remove all *_0.dds files |
+| **3** | Remove all *_1.dds files |
+| **4** | Removes all DDS files |
 
 ### Troubleshooting: "script cannot be loaded because running scripts is disabled"
 Windows blocks PowerShell scripts by default. To fix this:
@@ -23,6 +36,11 @@ Windows blocks PowerShell scripts by default. To fix this:
    ```
 3. Type `Y` and press Enter to confirm
 4. Try running `cleaner.ps1` again
+
+```powershell
+   # for help
+   Get-Help ./cleaner.ps1
+```
 
 ---
 
