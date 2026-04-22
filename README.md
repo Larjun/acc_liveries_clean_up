@@ -11,9 +11,6 @@ PowerShell comes built into Windows — no extra installs needed.
 3. Once downloaded, right-click the ZIP file and select **Extract All**
 4. Choose a location you can easily find (e.g. your Desktop) and click **Extract**
 
-1. On this page, click the below link to download and run the script automatically
-[<img src="https://gist.githubusercontent.com/cxmeel/0dbc95191f239b631c3874f4ccf114e2/raw/download.svg" alt="Powershell Version" height="32" />](https://github.com/Larjun/acc_liveries_clean_up/blob/powershellVersion/cleaner.ps1)
-
 ### 2. Run the script
 Right-click `cleaner.ps1` and select **Run with PowerShell**. A menu will appear — enter the number for the option you want and press Enter.
 
@@ -35,10 +32,13 @@ Windows blocks PowerShell scripts by default. To fix this:
    ```
 3. Type `Y` and press Enter to confirm
 4. Try running `cleaner.ps1` again
-
+5. Built in Help
 ```powershell
-   # for help
+   # for Basic help
    Get-Help ./cleaner.ps1
+
+   #for Full help
+   Get-Help ./cleaner.ps1 -Full
 ```
 
 ---
