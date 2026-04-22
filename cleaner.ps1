@@ -52,7 +52,8 @@ param (
     [CmdletBinding()]
     [Parameter(Mandatory=$false)]
     [string] $customsPath = "$env:USERPROFILE\Documents\Assetto Corsa Competizione\Customs\" ,
-    [Parameter(Mandatory=$true, HelpMessage="Option 0: See what would be removed'default'
+    [Parameter(Mandatory=$true, HelpMessage="
+        Option 0: See what would be removed'default'
         Option 1: Remove all liveries without Cars file 
         Option 2: Remove _0.dds files 
         Option 3: Remove _1.dds files 
@@ -177,12 +178,7 @@ function Remove-DDSFiles {
 # Show-Menu wraps it all up and allows the tool to be ran by right clicking on file and selecting Run with Powershell
 function Show-Menu {
     param (
-        [Parameter(Mandatory=$true,HelpMessage="
-        Option 0: See what would be removed'default'
-        Option 1: Remove all liveries without Cars file 
-        Option 2: Remove _0.dds files 
-        Option 3: Remove _1.dds files 
-        Option 4: Remove all DDS files")]
+        [Parameter(Mandatory=$true)]
         [ValidateSet("0","1","2","3","4")]
         [int]$choice
     )
