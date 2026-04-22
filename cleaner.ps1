@@ -9,32 +9,29 @@
 .PARAMETER customPath
     Default: "$env:USERPROFILE\Documents\Assetto Corsa Competizione\Customs\"
 .PARAMETER choice
-    Takes 0 through 4 for inputs
-    Provide '!?' without the quotes to obtain help with options
+    Takes 0 through 4 for inputs. Optional — if omitted, options are displayed and the user is prompted
 .INPUTS
     OPTION 0
     Allows code to be ran and log what WOULD be deleted but does NOT remove ANYTHING
+    Shows and logs livery folders and DDS files that would be removed
     Writes out to the log file "$env:USERPROFILE\Documents\Assetto Corsa Competizione\Customs\ACC_LIVERIES_CLEAN_UP.LOG"
 
     OPTION 1
-    Remove all liveries without Cars file 
+    Remove all liveries without Cars file; logs each deleted folder and total count
 
     OPTION 2
-    Remove all *_0.dds files
+    Remove all *_0.dds files; logs each deleted file and total count
 
     OPTION 3
-    Remove all *_1.dds files
+    Remove all *_1.dds files; logs each deleted file and total count
 
     OPTION 4
-    Removes all DDS files    
+    Removes all DDS files; logs each deleted file and total count
 .LINK
     https://github.com/Larjun/acc_liveries_clean_up
 .INPUTS
     Running by right clicking and selecting Run with Powershell:
-    cmdlet cleaner.ps1 at command pipeline position 1
-    Supply values for the following parameters:
-    (Type !? for Help.)
-    choice: 0
+    The options menu is displayed automatically. Enter a number (0-4) and press Enter.
 .OUTPUTS
     cmdlet cleaner.ps1 at command pipeline position 1
 
@@ -52,14 +49,7 @@ param (
     [CmdletBinding()]
     [Parameter(Mandatory=$false)]
     [string] $customsPath = "$env:USERPROFILE\Documents\Assetto Corsa Competizione\Customs\" ,
-    [Parameter(Mandatory=$true, HelpMessage="
-        Option 0: See what would be removed'default'
-        Option 1: Remove all liveries without Cars file 
-        Option 2: Remove _0.dds files 
-        Option 3: Remove _1.dds files 
-        Option 4: Remove all DDS files")]
-    [ValidateSet("0","1","2","3","4")]
-    [int]$choice
+    [string]$choice = ""
 )
 
 # Write-Log stores log file in "$env:USERPROFILE\Documents\Assetto Corsa Competizione\Customs\" to review if $true is passed to -Whatif
@@ -164,12 +154,15 @@ function Remove-DDSFiles {
                 $percentage = ($i / $fileCount) * 100
                 $ddsFolderName = ($ddsFiles[$i] -split '\\')[$liveryFolderCount]
                 $ddsFolderFile = ($ddsFiles[$i] -split '\\')[$liveryFolderCount + 1]
-                $ddsRemovalDetails = $ddsFolderName + " contents " + $ddsFolderFile
                 Start-Sleep -Milliseconds 0.5
+                Write-Log -Message "Deleted file: $ddsFolderName\$ddsFolderFile"
                 Remove-Item -Path $ddsFiles[$i]
                 Write-Progress -Activity "Deleting $($i+1) / $fileCount files" -CurrentOperation "Removing $ddsFolderName file $ddsFolderFile" -Status "$percentage% Complete" -PercentComplete $percentage
             }
         } until ($ddsFileCount -le $fileCount)
+        Write-Progress -Completed -Activity "Done"
+        Write-Output "Deleted $fileCount $files.dds files."
+        Write-Log -Message "-------------------------------------------`nTotal deleted: $fileCount $files.dds files`n`n"
     } else {
         Write-Output "No dds files found"
     }
@@ -193,7 +186,14 @@ function Show-Menu {
                 if ($toDelete.Count -eq 0) {
                     Write-Output "No unused livery directories found."
                 } else {
+                    Write-Log "`n`n-------------------------------------------`nOption 1 will delete the following liveries"
+                    foreach ($dir in $toDelete) {
+                        Write-Log -Message "Would delete livery directory: $($dir.Name)"
+                    }
+                    Write-Log -Message "Would delete $($toDelete.Count) livery directories in total."
+                    Write-Log "`n`n-------------------------------------------`nOption 2 and 4 will delete the following files"
                     Remove-DDSFiles -files _0 -path $customsPath -Whatif $true
+                    Write-Log "`n`n-------------------------------------------`nOption 2 and 4 will delete the following files"
                     Remove-DDSFiles -files _1 -path $customsPath -Whatif $true
                 }
             }
@@ -211,13 +211,14 @@ function Show-Menu {
                     $total = $toDelete.Count
                     for ($i = 0; $i -lt $total; $i++) {
                         $percentage = [int](($i + 1) / $total * 100)
-                        Write-Progress -Activity "Deleting $($i+1) / $total directories" -Status "$percentage% Complete" -PercentComplete $percentage
+                        Write-Progress -Activity "Deleting $($i+1) / $total directories" -CurrentOperation "Procssing $($toDelete[$i].Name)" -Status "$percentage% Complete" -PercentComplete $percentage
                         Start-Sleep -Milliseconds 0.5
+                        Write-Log -Message "Deleted livery directory: $($toDelete[$i].Name)"
                         Remove-Item -Path $toDelete[$i].FullName -Recurse -Force
                     }
                     Write-Progress -Completed -Activity "Done"
                     Write-Output "Deleted $total unused livery directories."
-                    Write-Log -Message "Deleted $total livery directories"
+                    Write-Log -Message "-------------------------------------------`nTotal deleted: $total livery directories`n`n"
                 }
             }
         }
@@ -235,5 +236,40 @@ function Show-Menu {
     return $choice
 }
 
+$optionList = @"
+Enter the option for what you would like the script to do:
+    Option 0: See what would be removed (default)
+    Option 1: Remove all liveries without Cars file
+    Option 2: Remove _0.dds files
+    Option 3: Remove _1.dds files
+    Option 4: Remove all DDS files
+"@
+
+$endScreen = @"
+Finished executing!
+A log file has been created in $customsPath that contains info on what has been done. 
+You Can Now Close The Window
+"@
+
 # Main
+if ($choice -eq "") {
+    Write-Output @"
+   ___  __________  __   _                     _______                     
+  / _ |/ ___/ ___/ / /  (_)  _____ ______ __  / ___/ /__ ___ ____  ___ ____
+ / __ / /__/ /__  / /__/ / |/ / -_) __/ // / / /__/ / -_) _ `/ _ \/ -_) __/
+/_/ |_\___/\___/ /____/_/|___/\__/_/  \_, /  \___/_/\__/\_,_/_//_/\__/_/   
+                                     /___/                                 
+"@
+    Write-Output $optionList
+    do {
+        $choice = Read-Host "Enter option (0-4)"
+        if ($choice -notin "0","1","2","3","4") {
+            Clear-Host
+            Write-Output "Invalid input. Please enter a number between 0 and 4."
+            Write-Output $optionList
+        }
+    } while ($choice -notin "0","1","2","3","4")
+}
+Write-Output "   "
 Show-Menu -choice $choice
+Read-Host $endScreen
