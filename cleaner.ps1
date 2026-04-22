@@ -26,9 +26,7 @@
     Remove all *_1.dds files
 
     OPTION 4
-    Removes all DDS files
-
-    
+    Removes all DDS files    
 .LINK
     https://github.com/Larjun/acc_liveries_clean_up
 .INPUTS
@@ -63,6 +61,7 @@ param (
     [int]$choice
 )
 
+# Write-Log stores log file in "$env:USERPROFILE\Documents\Assetto Corsa Competizione\Customs\" to review if $true is passed to -Whatif
 function Write-Log {
     param(
     [Parameter(Mandatory=$true)]
@@ -73,6 +72,8 @@ function Write-Log {
     $logFileCustomsPath = $customsPath, "ACC_LIVERIES_CLEAN_UP.LOG" -join ''
     Add-Content -Path $logFileCustomsPath -Value $Line
 }
+
+# Function: Get-CustomSkinNames searched for car json files and attempts to determine customSkinName to assist with sorting
 function Get-CustomSkinNames {
     param (
         [Parameter(Mandatory=$true)]
@@ -85,7 +86,6 @@ function Get-CustomSkinNames {
     $jsonFile = if($carsPathCheck) {
         (Get-ChildItem -Path $carsPath -Filter "*.json").FullName
     } else {
-        # Write-Output 'No Cars folder located in this directory. Was it moved to another drive?'
         return $false
     }
     if ($false -ne $jsonFile) {
@@ -96,7 +96,6 @@ function Get-CustomSkinNames {
                 try {
                     $text = Get-content $file -raw -Encoding Unicode -ErrorAction Stop
                     $data = $text | ConvertFrom-Json -ErrorAction Stop
-
                 } catch {
                     $text = Get-Content -Path $file -Raw -Encoding UTF8 -ErrorAction Stop
                     $data = $text | ConvertFrom-Json -ErrorAction Stop
@@ -114,6 +113,8 @@ function Get-CustomSkinNames {
     }
     return [PSCustomObject]@{ SkinNames = $skinNames; Skipped = $skipped }
 }
+
+# Remove-DDSFiles takes parameters to remove *_1.dds and *_0.dds files and includes a -Whatif ability if OPTION 0 is used
 function Remove-DDSFiles {
     param (
         [Parameter(Mandatory=$true)]
@@ -135,7 +136,7 @@ function Remove-DDSFiles {
             (Get-ChildItem -Path $liveryPath -Filter "*_1.dds" -Depth 1).FullName
         }
     } else {
-        # Write-Output 'No Cars folder located in this directory. Was it moved to another drive?'
+        # No Cars folder located in this directory
         return $false
     }
 
@@ -172,6 +173,8 @@ function Remove-DDSFiles {
         Write-Output "No dds files found"
     }
 }
+
+# Show-Menu wraps it all up and allows the tool to be ran by right clicking on file and selecting Run with Powershell
 function Show-Menu {
     param (
         [Parameter(Mandatory=$true,HelpMessage="
@@ -196,10 +199,6 @@ function Show-Menu {
                 } else {
                     Remove-DDSFiles -files _0 -path $customsPath -Whatif $true
                     Remove-DDSFiles -files _1 -path $customsPath -Whatif $true
-                    # $toDelete | ForEach-Object {
-                    #     Write-Output "  $($_.Name)"
-                    #     Write-Log -Message "Would remove livery: $($_.Name)"
-                    # }
                 }
             }
         }
@@ -240,4 +239,5 @@ function Show-Menu {
     return $choice
 }
 
+# Main
 Show-Menu -choice $choice
