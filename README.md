@@ -12,8 +12,9 @@ PowerShell comes built into Windows — no extra installs needed.
 4. Choose a location you can easily find (e.g. your Desktop) and click **Extract**
 
 1. On this page, click the below link to download and run the script automatically
-[![Download ACC CLEANER Powershell Version](https://gist.githubusercontent.com/cxmeel/0dbc95191f239b631c3874f4ccf114e2/raw/download.svg)](https://github.com/Larjun/acc_liveries_clean_up/blob/powershellVersion/cleaner.ps1)
-
+<a href="https://github.com/Larjun/acc_liveries_clean_up/blob/powershellVersion/cleaner.ps1">
+  <button>Click Me</button>
+</a>
 
 ### 2. Run the script
 Right-click `cleaner.ps1` and select **Run with PowerShell**. A menu will appear — enter the number for the option you want and press Enter.
