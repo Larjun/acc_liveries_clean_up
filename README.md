@@ -24,9 +24,20 @@ Right-click `cleaner.ps1` and select **Run with PowerShell**. A menu will appear
 | **4** | Removes all DDS files |
 
 ### 4. Example Output and LogFile
+
+#### Option Menu
+
 ![Option_Menu](images\Powershell_Option.png)
+
+#### Option Help
+
 ![Option_Help](images/Powershell_Option_Help.png)
+
+#### Menu Output
+
 ![Menu_Output](images\Powershell_Option_0_Output_Example.png)
+
+#### LogFile
 ![LogFile](images\Powershell_Option_0_Log_File_Example.png)
 
 ### Troubleshooting: "script cannot be loaded because running scripts is disabled"
