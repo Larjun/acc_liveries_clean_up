@@ -26,18 +26,16 @@ Right-click `cleaner.ps1` and select **Run with PowerShell**. A menu will appear
 ### 4. Example Output and LogFile
 
 #### Option Menu
-
-![Option_Menu](images\Powershell_Landing_Screen.png)
+![Option Menu](https://github.com/Larjun/acc_liveries_clean_up/blob/main/images/Powershell_Landing_Screen.png)
 
 #### Menu Output
-
-![Menu_Output](images\Powershell_Option_0_Output_Example.png)
+![Menu_Output](https://github.com/Larjun/acc_liveries_clean_up/blob/main/images/Powershell_Option_0_Log_File_Example.png)
 
 #### LogFile
-![LogFile](images\Powershell_Option_0_Log_File_Example.png)
+![LogFile](https://github.com/Larjun/acc_liveries_clean_up/blob/main/images/Powershell_Option_0_Output_Example.png)
 
 #### After Execution
-![LogFile](images\Powershell_Post_Exec.png)
+![LogFile](https://github.com/Larjun/acc_liveries_clean_up/blob/main/images/Powershell_Post_Exec.png)
 
 ### Troubleshooting: "script cannot be loaded because running scripts is disabled"
 Windows blocks PowerShell scripts by default. To fix this:
